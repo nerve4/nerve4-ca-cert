@@ -1,0 +1,14 @@
+---
+# tasks - main.yml for nerve4-ca-cert
+
+- include: rhel-install-cacert.yml
+  when: 
+    (ansible_distribution == "CentOS") or
+    (ansible_distribution == "RedHat") or
+    (ansible_distribution in "Rocky")
+
+- include: ubuntu-install-cacert.yml
+  when: 
+    - ansible_distribution == "Ubuntu"
+
+- include: configure-cacert.yml

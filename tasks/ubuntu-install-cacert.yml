@@ -1,0 +1,8 @@
+---
+# tasks - ubuntu-install-cacert.yml for nerve4-ca-cert
+
+- name: Install CA-Certs on Ubuntu
+  ansible.builtin.apt: 
+    name: "{{ item }}"
+    state: present
+  loop: "{{ ubuntu_pkgs }}"
