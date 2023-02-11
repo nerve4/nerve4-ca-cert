@@ -1,0 +1,40 @@
+---
+# tasks - configure-cacert.yml for nerve4-ca-cert
+
+- name: Make sure CA directory is exists on Rhel/Rocky
+  become: yes
+  become_method: sudo
+  ansible.builtin.file:
+    path: "{{ ca_path_rhel }}"
+    state: directory
+    mode: '0640'
+  when: 
+    (ansible_distribution == "CentOS") or
+    (ansible_distribution == "RedHat") or
+    (ansible_distribution in "Rocky")
+
+- name: Generate the certificate on Rhel/Rocky
+  become: yes
+  ansible.builtin.shell: |
+    openssl req -nodes -newkey "{{ ca_type }}" \
+    -keyout "{{ key_name }}" \
+    -out "{{ ca_crt_name }}" \
+    -subj "/C={{ ca_sub_country }}/ST={{ ca_sub_state }}/L={{ ca_sub_location }}/O={{ ca_sub_org }}/OU={{ ca_sub_ou }}/CN={{ ca_domain }}.{{ tld }}"
+  args:
+    chdir: "{{ ca_path_rhel }}"
+  when: 
+    (ansible_distribution == "CentOS") or
+    (ansible_distribution == "RedHat") or
+    (ansible_distribution in "Rocky")
+
+- name: Generate the certificate on Ubuntu
+  become: yes
+  ansible.builtin.shell: |
+    openssl req -nodes -newkey "{{ ca_type }}" \
+    -keyout "{{ key_name }}" \
+    -out "{{ ca_crt_name }}" \
+    -subj "/C={{ ca_sub_country }}/ST={{ ca_sub_state }}/L={{ ca_sub_location }}/O={{ ca_sub_org }}/OU={{ ca_sub_ou }}/CN={{ ca_domain }}.{{ tld }}"
+  args:
+    chdir: "{{ ca_path_ubuntu }}"
+  when: 
+    - ansible_distribution == "Ubuntu"
